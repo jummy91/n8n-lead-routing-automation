@@ -1,0 +1,206 @@
+{
+  "name": "My workflow 5",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1312,
+        -608
+      ],
+      "id": "9a22a370-8b59-4588-bd91-df99ebce7d36",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "9993f56a-ad07-4a3d-b909-9a28753bbde0",
+              "name": "name",
+              "value": "Jummy",
+              "type": "string"
+            },
+            {
+              "id": "f594b864-b82a-49e5-88e5-5eb438bb591a",
+              "name": "company",
+              "value": "Jummy's bites",
+              "type": "string"
+            },
+            {
+              "id": "5f2d25a8-5dd5-491b-a3c3-e189def047b6",
+              "name": "deal value",
+              "value": 120000,
+              "type": "number"
+            },
+            {
+              "id": "6e0c516f-e91c-4d26-bed2-8435380032c1",
+              "name": "message",
+              "value": "please we urgently need your automation system for our sales team please call us back as soon  as possible",
+              "type": "string"
+            },
+            {
+              "id": "41585ec0-81d1-42c0-9b34-54f11cf55977",
+              "name": "source",
+              "value": "website",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1056,
+        -608
+      ],
+      "id": "09b22c67-8d94-4b96-b993-9f263fa01837",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a lead qualification assistant.\n\nYour job is to classify the customer as Hot, Warm, or Cold.\n\nRules:\n\nHot:\n- The customer sounds urgent\n- The customer wants to begin immediately or soon\n- The customer asks for a call or immediate contact\n- The customer shows strong buying intent\n\nWarm:\n- The customer is interested\n- The customer wants more information\n- The customer may buy later\n- There is no urgent request\n\nCold:\n- The customer is casually browsing\n- The customer is asking general questions\n- The customer does not show a clear intention to buy\n\nLead details:\n \nName: {{ $json.name }}\nCompany: {{ $json.company }}\nCustomer message:{{ $json.message }}\nDeal value:{{ $json[\"deal value\"] }}\nSource:{{ $json.source }}\n\nReturn only one word:\n\nHot\n\nor\n\nWarm\n\nor\n\nCold\n\nDo not add a sentence, punctuation, explanation, or markdown.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -896,
+        -608
+      ],
+      "id": "b1bea8cb-61a8-400f-bb64-184195b04ea6",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Edit Fields').item.json.message }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        -800,
+        -400
+      ],
+      "id": "ccbe4420-3664-4253-9e21-749457f3090e",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        -896,
+        -384
+      ],
+      "id": "adb7b17f-c061-4a81-9ed6-0512f970e1ab",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "IX6ow1V7sbZj5wAD",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "482f64f5-86fa-4051-a62f-46ac1fce67bd",
+              "name": "",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -608,
+        -608
+      ],
+      "id": "d73f8001-51e7-4f4d-a69f-487c7820c8d2",
+      "name": "Edit Fields1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": false
+  },
+  "versionId": "d34452dd-cd77-4e05-ab59-3ab8568d436d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1b79034cf8ed2684c99e91dfc73e10db24f71ca28ecce406f1ff2b6dd5d34e56"
+  },
+  "nodeGroups": [],
+  "id": "waV8tFSn2UL0qVzm",
+  "tags": []
+}
